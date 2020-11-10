@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: backend-dev
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile.dev
+    command: /start.dev.sh
+    volumes:
+      - './backend/:/usr/src/backend'
+      - 'static_volume:/usr/src/backend/staticfiles'
+      - 'media_volume:/usr/src/backend/mediafiles'
+#    expose:
+#      - 8000
+    ports:
+      - '8000:8000'
+    env_file:
+      - ./.env.dev
+    networks:
+      - proxy-frontend-backend
+
+
+networks:
+  proxy-frontend-backend:
+    driver: bridge
+
+volumes:
+  static_volume:
+  media_volume:

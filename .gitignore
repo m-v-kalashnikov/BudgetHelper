@@ -449,3 +449,4 @@ pyvenv.cfg
 pip-selfcheck.json
 !/backend/scripts/
 !/.env.dev
+/backend/*files/
