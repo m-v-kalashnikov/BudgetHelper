@@ -1,3 +1,5 @@
+# Usefull
+
 Cleaning of docker
 
 ```shell script
@@ -8,8 +10,10 @@ docker rm $(docker ps --filter=status=exited --filter=status=created -q)
 
 ```
 
+Entering into frontend docker for building of it
+
 ```shell script
-docker run --rm -it -v /home/michael/PycharmProjects/EasyB/frontend/:/code node:14.14.0-alpine /bin/sh
+docker run --rm -it -v {PATH_TO_PROJECT}/frontend/:/usr/src/frontend node:15.2.0-alpine /bin/sh
 ```
 
 
@@ -19,8 +23,9 @@ Change permissions
 sudo chown -R $USER:$USER .
 ```
 
+## Development
 
-Making script executable
+Making dev script executable
 
 ```shell script
 sudo chmod +x backend/scripts/start.dev.sh
@@ -34,21 +39,21 @@ docker-compose -f docker-compose.dev.yml down -v --remove-orphans
 ```
 
 
-Start of docker-compose.dev,yml session (first run will take a time)
+Start of docker-compose.dev.yml session (first run will take a time)
 
 ```shell script
 docker-compose -f docker-compose.dev.yml up --build
 ```
 
 
-Entering to server console
+Entering to backend console in dev
 
 ```shell script
-docker exec -it server /bin/sh
+docker exec -it backend-dev /bin/sh
 ```
+
+Entering to frontend console in dev
 
 ```shell script
-npm audit fix
-npm audit
+docker exec -it frontend-dev /bin/sh
 ```
-

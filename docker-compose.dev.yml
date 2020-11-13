@@ -1,8 +1,41 @@
 version: '3.8'
 
+networks:
+  proxy-frontend-backend:
+    driver: bridge
+
+volumes:
+  static_volume:
+  media_volume:
+
 services:
+  database:
+    container_name: database-dev
+#    restart: always
+    image: library/mongo:4.4.1
+    expose:
+      - 27017
+    env_file:
+      - ./.env.db.dev
+    networks:
+      - proxy-frontend-backend
+
+  database-gui:
+    container_name: database-gui-dev
+#    restart: always
+    image: library/mongo-express:0.54.0
+    expose:
+      - 8081
+    env_file:
+      - ./.env.db.dev
+    depends_on:
+      - database
+    networks:
+      - proxy-frontend-backend
+
   backend:
     container_name: backend-dev
+#    restart: always
     build:
       context: .
       dockerfile: ./backend/Dockerfile.dev
@@ -11,20 +44,44 @@ services:
       - './backend/:/usr/src/backend'
       - 'static_volume:/usr/src/backend/staticfiles'
       - 'media_volume:/usr/src/backend/mediafiles'
-#    expose:
-#      - 8000
-    ports:
-      - '8000:8000'
+    expose:
+      - 8000
     env_file:
       - ./.env.dev
+    depends_on:
+      - database
     networks:
       - proxy-frontend-backend
 
+  frontend:
+    container_name: frontend-dev
+#    restart: always
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - '/usr/src/frontend/node_modules'
+      - './frontend:/usr/src/frontend'
+      - 'static_volume:/usr/src/backend/staticfiles'
+      - 'media_volume:/usr/src/backend/mediafiles'
+    expose:
+      - 4200
+    depends_on:
+      - backend
+    networks:
+      - proxy-frontend-backend
 
-networks:
-  proxy-frontend-backend:
-    driver: bridge
-
-volumes:
-  static_volume:
-  media_volume:
+  proxy:
+    container_name: proxy-dev
+#    restart: always
+    image: library/nginx:1.19.4-alpine
+    ports:
+      - '8000:80'
+    depends_on:
+      - frontend
+    volumes:
+      - './proxy/nginx_dev.conf:/etc/nginx/nginx.conf:ro'
+      - 'static_volume:/usr/src/backend/staticfiles'
+      - 'media_volume:/usr/src/backend/mediafiles'
+    networks:
+      - proxy-frontend-backend
