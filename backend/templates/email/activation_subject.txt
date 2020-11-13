@@ -1,0 +1,2 @@
+{% load i18n %}
+{% blocktrans with site_name=site_name %}Активация аккаунта на {{ site_name }}{% endblocktrans %}

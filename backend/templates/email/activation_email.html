@@ -1,0 +1,9 @@
+{% load i18n %}
+
+<h3>{{ site_name }}</h3>
+
+<p>{% blocktranslate with username=user.username %}Приветик {{ username }}!{% endblocktranslate %}</p>
+
+<p>{% blocktranslate %}Для активации аккаунта перейдите по ссылке:{% endblocktranslate %}</p>
+
+<p>{{ protocol }}://{{ domain }}/{{ path }}/{{ token }}</p>

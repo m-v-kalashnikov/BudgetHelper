@@ -381,3 +381,4 @@ FodyWeavers.xsd
 .history/
 /mediafiles/
 /staticfiles/
+/logfiles/

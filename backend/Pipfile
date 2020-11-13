@@ -13,6 +13,7 @@ django = "*"
 djongo = "*"
 graphene-django = "*"
 django-graphql-jwt = "*"
+django-graphql-auth = "*"
 
 [requires]
 python_version = "3.9"

@@ -351,5 +351,6 @@ FodyWeavers.xsd
 .history/
 /mediafiles/
 /staticfiles/
+/logfiles/
 node_modules/
 dist/

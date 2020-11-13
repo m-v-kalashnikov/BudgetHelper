@@ -1,5 +1,6 @@
-from graphene import Mutation, ObjectType, List, Field, Int, String, ID
+from graphene import ID, Field, Int, List, Mutation, ObjectType, String
 from graphene_django.types import DjangoObjectType
+
 from .models import CustomUser as User
 
 

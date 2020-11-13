@@ -13,21 +13,16 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from os import environ as environment
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = environment['DJANGO_SETTINGS_SECRET_KEY']
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(environment['DJANGO_SETTINGS_DEBUG'])
 
 ALLOWED_HOSTS = environment['DJANGO_SETTINGS_ALLOWED_HOSTS'].split(' ')
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -36,7 +31,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'graphene_django',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'graphql_auth',
+    'django_filters',
 
     'users.apps.UsersConfig'
 ]
@@ -56,7 +55,9 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,7 +77,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': environment['DJANGO_DATABASE_ENGINE'],
+        'ENGINE': 'djongo',
         'NAME': environment['DJANGO_DATABASE_NAME'],
         'ENFORCE_SCHEMA': bool(environment['DJANGO_DATABASE_ENFORCE_SCHEMA']),
         'CLIENT': {
@@ -138,4 +139,75 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 GRAPHENE = {
     'SCHEMA': 'core.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
 }
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_auth.backends.GraphQLAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_ALLOW_ANY_CLASSES': [
+        'graphql_auth.mutations.Register',
+        'graphql_auth.mutations.VerifyAccount',
+        'graphql_auth.mutations.ResendActivationEmail',
+        'graphql_auth.mutations.SendPasswordResetEmail',
+        'graphql_auth.mutations.PasswordReset',
+        'graphql_auth.mutations.ObtainJSONWebToken',
+        'graphql_auth.mutations.VerifyToken',
+        'graphql_auth.mutations.RefreshToken',
+        'graphql_auth.mutations.RevokeToken',
+        'graphql_auth.mutations.VerifySecondaryEmail',
+    ],
+}
+
+GRAPHQL_AUTH = {
+    'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
+    'ALLOW_LOGIN_NOT_VERIFIED': False,
+    'REGISTER_MUTATION_FIELDS': [
+        'email',
+        'username'
+    ],
+    'REGISTER_MUTATION_FIELDS_OPTIONAL': [
+        'first_name',
+        'last_name'
+    ],
+    'UPDATE_MUTATION_FIELDS': [
+        'first_name',
+        'last_name'
+    ],
+    'USER_NODE_FILTER_FIELDS': {
+        'first_name': ['exact', 'icontains', 'istartswith'],
+        'last_name': ['exact', 'icontains', 'istartswith']
+    }
+    # TODO: Add and configure 'EMAIL_ASYNC_TASK'
+}
+
+SITE_ID = 1
+
+EMAIL_BACKEND_DEV = 'django.core.mail.backends.filebased.EmailBackend'
+
+EMAIL_BACKEND_PROD = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_BACKEND = EMAIL_BACKEND_DEV if DEBUG else EMAIL_BACKEND_PROD
+
+EMAIL_FILE_PATH = BASE_DIR / 'logfiles/email_out/'
+
+EMAIL_HOST = 'smtp.eu.mailgun.org'
+
+EMAIL_USE_TLS = True
+
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER = environment['DJANGO_SETTINGS_EMAIL_HOST_USER']
+
+EMAIL_HOST_PASSWORD = environment['DJANGO_SETTINGS_EMAIL_HOST_PASSWORD']
+
+DEFAULT_FROM_EMAIL = environment['DJANGO_SETTINGS_DEFAULT_FROM_EMAIL']
+
+ADMIN_PATH = environment['DJANGO_SETTINGS_ADMIN_PATH']
