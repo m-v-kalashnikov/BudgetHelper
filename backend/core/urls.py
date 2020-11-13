@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
+from core.settings import ADMIN_PATH
 
 urlpatterns = [
-    path('api/admin/', admin.site.urls),
-    path('api/budget_helper/', GraphQLView.as_view(graphiql=True)),
+    path(ADMIN_PATH, admin.site.urls),
+    path('api/budget_helper/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
 ]

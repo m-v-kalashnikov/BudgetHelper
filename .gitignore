@@ -453,3 +453,4 @@ pip-selfcheck.json
 !/.env.db.dev
 /backend/mediafiles/
 /backend/staticfiles/
+/backend/logfiles/
