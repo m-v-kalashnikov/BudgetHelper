@@ -6,6 +6,8 @@
 
 - docker-compose
 
+Download for [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
+
 ### Run
 
 ##### Dev mode
@@ -13,8 +15,6 @@
 ```shell script
 docker-compose -f docker-compose.dev.yml up --build
 ```
-
-**it shouldn't be detached as emails sends to console**
 
 ##### Prod mode
 
